@@ -40,4 +40,13 @@ class AmbientMixer {
 document.addEventListener("DOMContentLoaded", () => {
   const app = new AmbientMixer();
   app.init();
+  //For testing.Mozemo da testiramo u brouzeru tako sto mozemo da ucinimo app dostupnu globalno.
+
+  // window.app = app;
+
+  //Ovako mozemo da pristupimo app preko conzole brouzera
+  //Kucamo:
+  //await app.soundManager.playSound('rain') ili cafe,thunder...
+  //await app.soundManager.setVolume('rain',40) da podesimo zvuk
+  // app.soundManager.pauseSound('rain') da pauziramo
 });
