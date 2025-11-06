@@ -6,39 +6,31 @@ export const sounds = [
     icon: "fa-cloud-rain",
     color: "from-blue-500 to-cyan-500", //background of icon
     file: "rain.mp3",
-    desription: "Gentile rainfall",
-  },
-  {
-    id: "rain",
-    name: "Rain",
-    icon: "fa-cloud-rain",
-    color: "from-blue-500 to-cyan-500", //background of icon
-    file: "rain.mp3",
-    desription: "Gentile rainfall",
-  },
-  {
-    id: "rain",
-    name: "Rain",
-    icon: "fa-cloud-rain",
-    color: "from-blue-500 to-cyan-500", //background of icon
-    file: "rain.mp3",
-    desription: "Gentile rainfall",
+    description: "Gentile rainfall",
   },
   {
     id: "ocean",
     name: "Ocean Waves",
     icon: "fa-water",
-    color: "from-teal-500 to-blue-500", //background of icon
+    color: "from-teal-500 to-blue-500",
     file: "ocean.mp3",
-    desription: "Calming ocean waves",
+    description: "Calming ocean waves",
   },
   {
     id: "forest",
     name: "Forest",
     icon: "fa-tree",
-    color: "from-green-500 to-emerald-500", //background of icon
+    color: "from-green-500 to-emerald-500",
     file: "birds.mp3",
-    desription: "Birds and wind in trees",
+    description: "Birds and wind in trees",
+  },
+  {
+    id: "fireplace",
+    name: "Fireplace",
+    icon: "fa-fire",
+    color: "from-orange-500 to-red-500",
+    file: "fireplace.mp3",
+    description: "Crackling fire",
   },
   {
     id: "thunder",
@@ -46,7 +38,7 @@ export const sounds = [
     icon: "fa-bolt",
     color: "from-purple-500 to-indigo-500", //background of icon
     file: "thunder.mp3",
-    desription: "Distante thunder",
+    description: "Distante thunder",
   },
   {
     id: "wind",
@@ -54,7 +46,7 @@ export const sounds = [
     icon: "fa-wind",
     color: "from-gray-400 to-grey-600", //background of icon
     file: "wind.mp3",
-    desription: "Gentile breeze",
+    description: "Gentile breeze",
   },
   {
     id: "cafe",
@@ -62,7 +54,7 @@ export const sounds = [
     icon: "fa-mug-hot",
     color: "from-amber-600 to-yellow-600", //background of icon
     file: "cafe.mp3",
-    desription: "Ambient cafe sounds",
+    description: "Ambient cafe sounds",
   },
   {
     id: "night",
@@ -70,7 +62,7 @@ export const sounds = [
     icon: "fa-moon",
     color: "from-indigo-600 to-purple-600", //background of icon
     file: "night.mp3",
-    desription: "Crickets and night sounds",
+    description: "Crickets and night sounds",
   },
 ];
 

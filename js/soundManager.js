@@ -44,7 +44,7 @@ export class SoundManager {
     }
   }
 
-  //SET volume for specific spund (0-100)
+  //SET volume for specific sound (0-100)
 
   setVolume(soundId, volume) {
     const audio = this.audioElements.get(soundId);

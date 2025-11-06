@@ -74,4 +74,47 @@ export class UI {
       this.soundCardsContainer.appendChild(card);
     });
   }
+
+  //Update play/pause button for idividual sound
+  updatePalyButton(soundId, isPlaying) {
+    const card = document.querySelector(`[data-sound="${soundId}"]`); //metadata atribute
+    if (card) {
+      const playBtn = card.querySelector(".play-btn");
+      const icon = playBtn.querySelector("i");
+      if (isPlaying) {
+        //ako svira,menjamo ikonu i pustamo zvuk
+        icon.classList.remove("fa-play");
+        icon.classList.add("fa-pause");
+        card.classList.add("playing");
+      } else {
+        //ako ne svira,onda obrnuto
+        icon.classList.remove("fa-pause");
+        icon.classList.add("fa-play");
+        card.classList.remove("playing");
+      }
+    }
+  }
+  // Update Volume Display for individual sounds
+  updateVolumeDisplay(soundId, volume) {
+    const card = document.querySelector(`[data-sound=${soundId}]`);
+    //Update number displpay
+    if (card) {
+      const volumeValue = card.querySelector(".volume-value");
+      if (volumeValue) {
+        volumeValue.textContent = volume;
+      }
+      //Update visual volume bar
+
+      //volume slider
+      const volumeSlider = card.querySelector(".volume-slider");
+      if (volumeSlider) {
+        volumeSlider.value = volume;
+      }
+      //volume bar fill
+      const volumeBarFill = card.querySelector(".volume-bar-fill");
+      if (volumeBarFill) {
+        volumeBarFill.style.width = `${volume}%`;
+      }
+    }
+  }
 }

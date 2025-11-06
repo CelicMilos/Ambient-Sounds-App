@@ -20,12 +20,35 @@ class AmbientMixer {
       this.ui.init();
       //render sound cards using sound data
       this.ui.renderSoundCards(sounds);
+      //Fire off eventListeners
+      this.setUpEventListeners();
       //load all sounds
       this.loadAllSounds();
-      this, (this.isInitialized = true);
+      this.isInitialized = true;
     } catch (error) {
       console.error("Failed to initialized app: ", error);
     }
+  }
+
+  //Set up all evnt listeners
+  setUpEventListeners() {
+    //Handle all clicks event delegation,mora da bude async zbog zvukova
+    document.addEventListener("click", async (e) => {
+      //Provera da li je play/pause dugme kliknuto
+      if (e.target.closest(".play-btn")) {
+        const soundId = e.target.closest(".play-btn").dataset.sound;
+        await this.toggleSound(soundId);
+      }
+    });
+    //Handle volume sliders--input listeners!
+    document.addEventListener("input", (e) => {
+      if (e.target.classList.contains("volume-slider")) {
+        const soundId = e.target.dataset.sound;
+        const volume = parseInt(e.target.value); //da bude broj
+        this.setSoundVolume(soundId, volume);
+        // console.log(soundId, volume);
+      }
+    });
   }
 
   //Load all sound files
@@ -37,6 +60,43 @@ class AmbientMixer {
         console.warn(`Coud not load sound: ${sound.name} from ${audioUrl}`);
       }
     });
+  }
+  //Toggle individual suonds
+  async toggleSound(soundId) {
+    const audio = this.soundManager.audioElements.get(soundId);
+    if (!audio) {
+      console.error(`Sound ${soundId} not found`);
+      return false;
+    }
+    if (audio.paused) {
+      //Get Current slider value
+      const card = document.querySelector(`[data-sound="${soundId}"]`);
+      const slider = card.querySelector(".volume-slider");
+      let volume = parseInt(slider.value);
+      // Ako je slider na 0,po difoltu da bude na 50
+      if (volume === 0) {
+        volume = 30;
+        this.ui.updateVolumeDisplay(soundId, volume);
+      }
+
+      //Ako je zvuk pauziran -- nema zvuka,pusti svuk ponovo
+      this.soundManager.setVolume(soundId, volume);
+      await this.soundManager.playSound(soundId);
+      this.ui.updatePalyButton(soundId, true);
+      //Update volume display
+      this.ui.updateVolumeDisplay(soundId, volume);
+    } else {
+      //ako ima zvuka,ugasi ga
+      this.soundManager.pauseSound(soundId);
+      this.ui.updatePalyButton(soundId, false);
+    }
+  }
+  // Set sound volume
+  setSoundVolume(soundId, volume) {
+    //update sound in sound manager
+    this.soundManager.setVolume(soundId, volume);
+    //update UI
+    this.ui.updateVolumeDisplay(soundId, volume);
   }
 }
 
