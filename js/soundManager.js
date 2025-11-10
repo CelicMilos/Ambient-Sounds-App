@@ -27,7 +27,7 @@ export class SoundManager {
     if (audio) {
       try {
         await audio.play();
-        console.log(`Playing:${soundId}`);
+        // console.log(`Playing:${soundId}`);
         return true;
       } catch (error) {
         console.error(`Failed to play ${soundId}`, error);
@@ -56,7 +56,7 @@ export class SoundManager {
     //Ako ima zvuka,konvertujemo jacinu zvuka od 0-100 u 0-1
 
     audio.volume = volume / 100;
-    console.log(`Volume for ${soundId}:${volume}`);
+    // console.log(`Volume for ${soundId}:${volume}`);
     return true;
   }
 }

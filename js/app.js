@@ -12,6 +12,7 @@ class AmbientMixer {
     this.timer = null;
     this.curentSoundState = null;
     this.isInitialized = false;
+    this.masterVolume = 100;
   }
 
   init() {
@@ -49,6 +50,14 @@ class AmbientMixer {
         // console.log(soundId, volume);
       }
     });
+    //Handle master volume slider
+    const masterVolumeSlider = document.getElementById("masterVolume");
+    if (masterVolumeSlider) {
+      masterVolumeSlider.addEventListener("input", (e) => {
+        const volume = parseInt(e.target.value);
+        this.setMasterVolume(volume);
+      });
+    }
   }
 
   //Load all sound files
@@ -93,10 +102,45 @@ class AmbientMixer {
   }
   // Set sound volume
   setSoundVolume(soundId, volume) {
-    //update sound in sound manager
-    this.soundManager.setVolume(soundId, volume);
+    //Calculate effective volume wuth master volume
+    const effectiveVolume = (volume * this.masterVolume) / 100;
+    //Update the sound volume with the scale volume
+    const audio = this.soundManager.audioElements.get(soundId);
+    if (audio) {
+      audio.volume = effectiveVolume / 100;
+    }
     //update UI
     this.ui.updateVolumeDisplay(soundId, volume);
+  }
+  //Set master volume
+  setMasterVolume(volume) {
+    this.masterVolume = volume;
+    //Update display
+    const masterVolumeValue = document.getElementById("masterVolumeValue");
+    if (masterVolumeValue) {
+      masterVolumeValue.textContent = `${volume}%`;
+    }
+    //Applay master volume to all currently playing sounds
+    this.applyMasterVolumeToAll();
+  }
+  //Apply master volume
+  applyMasterVolumeToAll() {
+    for (const [soundId, audio] of this.soundManager.audioElements) {
+      if (!audio.paused) {
+        const card = document.querySelector(`[data-sound=${soundId}]`);
+        const slider = card?.querySelector(".volume-slider");
+        if (slider) {
+          const individualVolume = parseInt(slider.value);
+          //Calculate efective volume(individual * master / 100)
+          const effectiveVolume = (individualVolume * this.masterVolume) / 100;
+
+          //Apply to the actual audio element,
+          //ako je master na 50% a individual na 30%
+          //onda ce Efektivno bit 15% od individualnog.
+          audio.volume = effectiveVolume / 100;
+        }
+      }
+    }
   }
 }
 
