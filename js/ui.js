@@ -76,7 +76,7 @@ export class UI {
   }
 
   //Update play/pause button for idividual sound
-  updatePalyButton(soundId, isPlaying) {
+  updatePlayButton(soundId, isPlaying) {
     const card = document.querySelector(`[data-sound="${soundId}"]`); //metadata atribute
     if (card) {
       const playBtn = card.querySelector(".play-btn");
@@ -115,6 +115,18 @@ export class UI {
       if (volumeBarFill) {
         volumeBarFill.style.width = `${volume}%`;
       }
+    }
+  }
+
+  //Update Play all/Pause all button
+  updateMainPlayButton(isPlaying) {
+    const icon = this.playPauseButton.querySelector("i");
+    if (isPlaying) {
+      icon.classList.remove("fa-play");
+      icon.classList.add("fa-pause");
+    } else {
+      icon.classList.remove("fa-pause");
+      icon.classList.add("fa-play");
     }
   }
 }

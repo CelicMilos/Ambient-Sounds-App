@@ -10,7 +10,7 @@ class AmbientMixer {
     this.ui = new UI();
     this.presetMenager = null;
     this.timer = null;
-    this.curentSoundState = null;
+    this.curentSoundState = {};
     this.isInitialized = false;
     this.masterVolume = 100;
   }
@@ -50,12 +50,18 @@ class AmbientMixer {
         // console.log(soundId, volume);
       }
     });
-    //Handle master volume slider
+    //Handle master VOLUME slider
     const masterVolumeSlider = document.getElementById("masterVolume");
     if (masterVolumeSlider) {
       masterVolumeSlider.addEventListener("input", (e) => {
         const volume = parseInt(e.target.value);
         this.setMasterVolume(volume);
+      });
+    }
+    //Handle master PLAY btn
+    if (this.ui.playPauseButton) {
+      this.ui.playPauseButton.addEventListener("click", () => {
+        this.toggleAllSounds();
       });
     }
   }
@@ -91,13 +97,47 @@ class AmbientMixer {
       //Ako je zvuk pauziran -- nema zvuka,pusti svuk ponovo
       this.soundManager.setVolume(soundId, volume);
       await this.soundManager.playSound(soundId);
-      this.ui.updatePalyButton(soundId, true);
+      this.ui.updatePlayButton(soundId, true);
       //Update volume display
       this.ui.updateVolumeDisplay(soundId, volume);
     } else {
       //ako ima zvuka,ugasi ga
       this.soundManager.pauseSound(soundId);
-      this.ui.updatePalyButton(soundId, false);
+      this.ui.updatePlayButton(soundId, false);
+    }
+    //update main play btn
+    this.updateMainPlayButtonState();
+  }
+  //Toggle all sounds
+  toggleAllSounds() {
+    //Toggle sounds OFF
+    if (this.soundManager.isPlaying) {
+      this.soundManager.pauseAll();
+      this.ui.updateMainPlayButton(false);
+      sounds.forEach((sound) => {
+        this.ui.updatePlayButton(sound.id, false);
+      });
+    } else {
+      //Toggle sounds ON
+      for (const [soundId, audio] of this.soundManager.audioElements) {
+        const card = document.querySelector(`[data-sound=${soundId}]`);
+        const slider = card?.querySelector(".volume-slider");
+        if (slider) {
+          let volume = parseInt(slider.value);
+          if (volume === 0) {
+            volume = 30;
+            slider.value = 30;
+            this.ui.updateVolumeDisplay(soundId, 30);
+          }
+          this.curentSoundState[soundId] = volume;
+          const effectiveVolume = (volume * this.masterVolume) / 100;
+          audio.volume = effectiveVolume / 100;
+          this.ui.updatePlayButton(soundId, true);
+        }
+      }
+      //Play all sound
+      this.soundManager.playAll();
+      this.ui.updateMainPlayButton(true);
     }
   }
   // Set sound volume
@@ -111,6 +151,9 @@ class AmbientMixer {
     }
     //update UI
     this.ui.updateVolumeDisplay(soundId, volume);
+
+    //Sync sounds when PLAY/PAUSE all
+    this.updateMainPlayButtonState();
   }
   //Set master volume
   setMasterVolume(volume) {
@@ -141,6 +184,20 @@ class AmbientMixer {
         }
       }
     }
+  }
+  //Update Main play btn based on individual sounds
+  updateMainPlayButtonState() {
+    //check if any sounds are playing
+    let anySoundsPlaying = false;
+    for (const [soundId, audio] of this.soundManager.audioElements) {
+      if (!audio.paused) {
+        anySoundsPlaying = true;
+        break;
+      }
+    }
+    //Update the main button and the internal state
+    this.soundManager.isPlaying = anySoundsPlaying;
+    this.ui.updateMainPlayButton(anySoundsPlaying);
   }
 }
 

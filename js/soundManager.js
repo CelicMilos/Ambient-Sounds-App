@@ -40,7 +40,7 @@ export class SoundManager {
     const audio = this.audioElements.get(soundId);
     if (audio && !audio.paused) {
       audio.pause();
-      console.log(`Paused: ${soundId}`);
+      // console.log(`Paused: ${soundId}`);
     }
   }
 
@@ -58,5 +58,23 @@ export class SoundManager {
     audio.volume = volume / 100;
     // console.log(`Volume for ${soundId}:${volume}`);
     return true;
+  }
+  //Play all sounds
+  playAll() {
+    for (const [soundId, audio] of this.audioElements) {
+      if (audio.paused) {
+        audio.play();
+      }
+    }
+    this.isPlaying = true;
+  }
+  //Pause all sounds
+  pauseAll() {
+    for (const [soundId, audio] of this.audioElements) {
+      if (!audio.paused) {
+        audio.pause();
+      }
+    }
+    this.isPlaying = false;
   }
 }
