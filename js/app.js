@@ -1,6 +1,7 @@
 import { sounds, deafaultPresets } from "./soundData.js";
 import { SoundManager } from "./soundManager.js";
 import { UI } from "./ui.js";
+import { PresetManager } from "./presetManager.js";
 
 class AmbientMixer {
   //initialize dependencies and default state
@@ -8,7 +9,7 @@ class AmbientMixer {
   constructor() {
     this.soundManager = new SoundManager(); //from soundManager.js
     this.ui = new UI();
-    this.presetMenager = null;
+    this.presetManager = new PresetManager();
     this.timer = null;
     this.currentSoundState = {};
     this.isInitialized = false;
@@ -23,6 +24,8 @@ class AmbientMixer {
       this.ui.renderSoundCards(sounds);
       //Fire off eventListeners
       this.setUpEventListeners();
+      //Load custom Presets in UI
+      this.loadCustomPresetsUI();
       //load all sounds
       this.loadAllSounds();
       //Initailize sund states after lading sounds
@@ -73,9 +76,42 @@ class AmbientMixer {
         this.toggleAllSounds();
       });
     }
+
+    //Handle reset button
     if (this.ui.resetButton) {
       this.ui.resetButton.addEventListener("click", () => {
         this.resetAll();
+      });
+    }
+    //Save preset btn
+    const saveButton = document.getElementById("savePreset");
+    if (saveButton) {
+      saveButton.addEventListener("click", () => {
+        this.showSavePresetModal();
+      });
+    }
+    //Confirm Save preset btn on modal
+    const confirmSaveButton = document.getElementById("confirmSave");
+    if (confirmSaveButton) {
+      confirmSaveButton.addEventListener("click", () => {
+        this.saveCurrentPreset();
+      });
+    }
+
+    //Cancel save preset btn on modal
+    const cancelSaveButton = document.getElementById("cancelSave");
+    if (cancelSaveButton) {
+      cancelSaveButton.addEventListener("click", () => {
+        this.ui.hideModal();
+      });
+    }
+    //close modal if backdrop is clicked,
+    // ako se modal prikazuje onda pritiskom bilo gde drugde se sklanja
+    if (this.ui.modal) {
+      this.ui.modal.addEventListener("click", (e) => {
+        if (e.target === this.ui.modal) {
+          this.ui.hideModal();
+        }
       });
     }
   }
@@ -107,6 +143,8 @@ class AmbientMixer {
         volume = 30;
         this.ui.updateVolumeDisplay(soundId, volume);
       }
+      //Set current sound state
+      this.currentSoundState[soundId] = volume;
 
       //Ako je zvuk pauziran -- nema zvuka,pusti svuk ponovo
       this.soundManager.setVolume(soundId, volume);
@@ -118,6 +156,9 @@ class AmbientMixer {
       //ako ima zvuka,ugasi ga
       this.soundManager.pauseSound(soundId);
       this.ui.updatePlayButton(soundId, false);
+
+      //Set current sound state to 0 when paused
+      this.currentSoundState[soundId] = 0;
     }
     //update main play btn
     this.updateMainPlayButtonState();
@@ -262,6 +303,49 @@ class AmbientMixer {
     //Update main Play btn and state
     this.soundManager.isPlaying = true;
     this.ui.updateMainPlayButton(true);
+  }
+  //Show preset MOdal
+  showSavePresetModal() {
+    //Check if any sounds are active
+    const hasActiveSounds = Object.values(this.currentSoundState).some(
+      (v) => v > 0
+    ); //ako je value veca od 0,onda imamo aktivne zvuke
+    if (!hasActiveSounds) {
+      alert("Please pick some sounds first");
+      return;
+    }
+    this.ui.showModal();
+  }
+  // Save current custom preset btn
+  saveCurrentPreset() {
+    //First - get the preset name
+    const nameInput = document.getElementById("presetName");
+    const name = nameInput.value.trim();
+
+    if (!name) {
+      alert("Please enter preset name");
+      return;
+    }
+    if (this.presetManager.presetNameExists(name)) {
+      alert(`There is already a preset with the name ${name}.`);
+      return;
+    }
+    const presetId = this.presetManager.savePreset(
+      name,
+      this.currentSoundState
+    );
+    //Add custom preset btn tu UI
+    this.ui.addCustomPreset(name, presetId);
+    this.ui.hideModal();
+    console.log(`Preset ${name} with the ID ${presetId} is saved.`);
+  }
+  //Load Custom preset btns in UI
+  loadCustomPresetsUI() {
+    //Uzimao ih iz presetMa
+    const customPresets = this.presetManager.customPresets;
+    for (const [presetId, preset] of Object.entries(customPresets)) {
+      this.ui.addCustomPreset(preset.name, presetId);
+    }
   }
 }
 
