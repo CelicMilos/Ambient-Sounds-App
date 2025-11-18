@@ -52,6 +52,11 @@ class AmbientMixer {
         const presetKey = e.target.closest(".preset-btn").dataset.preset;
         await this.loadPreset(presetKey);
       }
+      //Provera da li je custom preset dugme kliknuto
+      if (e.target.closest(".custom-preset-btn")) {
+        const presetKey = e.target.closest(".custom-preset-btn").dataset.preset;
+        await this.loadPreset(presetKey, true);
+      }
     });
     //Handle volume sliders--input listeners!
     document.addEventListener("input", (e) => {
@@ -155,6 +160,7 @@ class AmbientMixer {
     } else {
       //ako ima zvuka,ugasi ga
       this.soundManager.pauseSound(soundId);
+      this.currentSoundState[soundId] = 0;
       this.ui.updatePlayButton(soundId, false);
 
       //Set current sound state to 0 when paused
@@ -262,15 +268,31 @@ class AmbientMixer {
   resetAll() {
     //Stop all sounds
     this.soundManager.stopAll();
+
     //REset All UI
     this.ui.resetUI();
+
     //Reset master valume
     this.masterVolume = 100;
-    console.log("All sounds and UI are reset to default.");
+    // console.log("All sounds and UI are reset to default.");
+
+    //Reset active presets
+    this.ui.setActivePreset(null);
+
+    //Reset active states
+    sounds.forEach((sound) => {
+      this.currentSoundState[sound.id] = 0;
+    });
   }
   //Load preset config
-  loadPreset(presetKey) {
-    const preset = deafaultPresets[presetKey];
+  loadPreset(presetKey, custom = false) {
+    let preset;
+    if (custom) {
+      preset = this.presetManager.laodPreset(presetKey);
+    } else {
+      preset = deafaultPresets[presetKey];
+    }
+
     if (!preset) {
       console.error(`Preset --${presetKey}-- is not found`);
       return;
@@ -303,6 +325,11 @@ class AmbientMixer {
     //Update main Play btn and state
     this.soundManager.isPlaying = true;
     this.ui.updateMainPlayButton(true);
+
+    //Set active preset
+    if (presetKey) {
+      this.ui.setActivePreset(presetKey);
+    }
   }
   //Show preset MOdal
   showSavePresetModal() {

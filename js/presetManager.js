@@ -7,6 +7,10 @@ export class PresetManager {
     const stored = localStorage.getItem("ambientMixerPresets");
     return stored ? JSON.parse(stored) : {}; //ako je sacuvano,vrati ga u funkciju ali ga prvo parsuj u JSON
   }
+  //Laod custom preset by ID
+  laodPreset(presetId) {
+    return this.customPresets[presetId] || null;
+  }
   //Save custom presets to localStorage
   saveCustomPresets() {
     localStorage.setItem(
