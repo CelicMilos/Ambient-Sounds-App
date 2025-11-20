@@ -144,6 +144,13 @@ class AmbientMixer {
         }
       });
     }
+    //Theme toggle
+    const themeBtn = document.getElementById("themeToggle");
+    if (themeBtn) {
+      themeBtn.addEventListener("click", () => {
+        this.ui.toggleTheme();
+      });
+    }
   }
 
   //Load all sound files
