@@ -19,8 +19,8 @@ export class UI {
     this.resetButton = document.getElementById("resetAll");
     this.modal = document.getElementById("savePresetModal");
     this.customPresetsContainer = document.getElementById("customPresets");
-    this.timerDisplay = document.getElementById("masterVolume");
-    this.timerSelect = document.getElementById("timerDisplay");
+    this.timerDisplay = document.getElementById("timerDisplay");
+    this.timerSelect = document.getElementById("timerSelect");
     this.themeToggle = document.getElementById("themeToggle");
   }
 
@@ -209,10 +209,24 @@ export class UI {
   //Remove custom preset from UI
   removeCustomPreset(presetId) {
     const button = document.querySelector(
-      `.custom-preset-btn[data-preset=${presetId}]`
+      `.custom-preset-btn[data-preset="${presetId}"]`
     );
     if (button) {
       button.remove();
+    }
+  }
+  //Update timer display
+  updateTimerDisplay(minutes, seconds) {
+    if (this.timerDisplay) {
+      if (minutes > 0 || seconds > 0) {
+        const formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds
+          .toString()
+          .padStart(2, "0")}`;
+        this.timerDisplay.textContent = formattedTime;
+        this.timerDisplay.classList.remove("hidden");
+      } else {
+        this.timerDisplay.classList.add("hidden");
+      }
     }
   }
 }
